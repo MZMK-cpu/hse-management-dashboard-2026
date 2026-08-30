@@ -1,1 +1,1 @@
-# hse-management-dashboard-2026
+index.html
