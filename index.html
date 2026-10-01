@@ -163,7 +163,7 @@ body.viewer-mode button[data-act="edit"], body.viewer-mode button[data-act="dele
 </section>
 
 <section class="section" id="ovr">
-<div class="module-title"><div><h2>📹 OVR MONITORING</h2><div class="muted">Pemantauan finding OVR mengikut depot, pemandu dan status tindakan.</div></div><button class="primary" id="addOVR">＋ Tambah OVR Finding</button></div>
+<div class="module-title"><div><h2>📹 OVR MONITORING</h2><div class="muted">Pemantauan finding OVR mengikut depot, pemandu dan status tindakan.</div></div><div><button class="primary" id="importOVRBtn">⬆ Import OVR</button> <button class="primary" id="addOVR">＋ Tambah OVR Finding</button></div></div>
 <div class="mini-grid">
 <div class="mini"><span class="label">JUMLAH FINDING</span><strong id="ovrTotal">0</strong></div>
 <div class="mini"><span class="label">OPEN / DALAM TINDAKAN</span><strong id="ovrOpen">0</strong></div>
@@ -213,6 +213,7 @@ body.viewer-mode button[data-act="edit"], body.viewer-mode button[data-act="dele
 </div>
 
 <input type="file" id="importAllFile" accept=".json" style="display:none">
+<input type="file" id="importOVRFile" accept=".json" style="display:none">
 
 <div id="modal" style="display:none;position:fixed;inset:0;background:#000b;z-index:20;align-items:center;justify-content:center;padding:20px">
 <div style="width:min(760px,100%);max-height:90vh;overflow:auto;background:#111f34;border:1px solid #3b5577;border-radius:16px;padding:20px">
@@ -316,7 +317,10 @@ function openModal(mode,index=null){
 }
 $("modalClose").onclick=()=>$("modal").style.display="none";
 $("modalForm").onsubmit=e=>{e.preventDefault();const fd=new FormData(e.target),rec={};schemas[modalMode].forEach(f=>rec[f[0]]=fd.get(f[0])||"");const arr=modalMode==="accident"?data.accidents:modalMode==="driver"?data.driverOffences:data[modalMode];if(editIndex===null)arr.push(rec);else arr[editIndex]=rec;$("modal").style.display="none";persist();renderAll()};
-$("addAccident").onclick=()=>openModal("accident");$("addDriver").onclick=()=>openModal("driver");$("addOVR").onclick=()=>openModal("ovr");$("addWPI").onclick=()=>openModal("wpi");$("addMVI").onclick=()=>openModal("mvi");$("addAwareness").onclick=()=>openModal("awareness");$("addTraining").onclick=()=>openModal("training");
+$("addAccident").onclick=()=>openModal("accident");$("addDriver").onclick=()=>openModal("driver");$("addOVR").onclick=()=>openModal("ovr");
+$("importOVRBtn").onclick=()=>$("importOVRFile").click();
+$("importOVRFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const x=JSON.parse(rd.result);const rows=Array.isArray(x)?x:x.ovr;if(!Array.isArray(rows))throw new Error("Format OVR tidak sah");data.ovr=rows;persist();renderAll();alert("Data OVR berjaya diimport: "+rows.length+" finding.");e.target.value=""}catch(err){alert("Fail OVR tidak sah.")}};rd.readAsText(f)};
+$("addWPI").onclick=()=>openModal("wpi");$("addMVI").onclick=()=>openModal("mvi");$("addAwareness").onclick=()=>openModal("awareness");$("addTraining").onclick=()=>openModal("training");
 
 function actionButtons(mode,i){if(!isAdmin())return "";return`<button class="btnlink edit-record" data-mode="${mode}" data-i="${i}">Edit</button> &nbsp; <button class="btnlink delete-record" style="color:#ff7585" data-mode="${mode}" data-i="${i}">Padam</button>`}
 function bindRecordButtons(){document.querySelectorAll(".edit-record").forEach(b=>b.onclick=()=>openModal(b.dataset.mode,+b.dataset.i));document.querySelectorAll(".delete-record").forEach(b=>b.onclick=()=>{if(!confirm("Padam rekod ini?"))return;const arr=b.dataset.mode==="accident"?data.accidents:b.dataset.mode==="driver"?data.driverOffences:data[b.dataset.mode];arr.splice(+b.dataset.i,1);persist();renderAll()})}
