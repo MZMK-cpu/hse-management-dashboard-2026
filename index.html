@@ -73,6 +73,7 @@ body.viewer-mode button[data-act="edit"], body.viewer-mode button[data-act="dele
 <nav>
 <button data-section="accident">🚨 &nbsp; Data Kemalangan</button>
 <button data-section="driver">⚠️ &nbsp; Kesalahan Pemandu & Tindakan</button>
+<button data-section="ovr">📹 &nbsp; OVR</button>
 <button data-section="wpi">🔍 &nbsp; WPI</button>
 <button data-section="mvi">🚛 &nbsp; MVI</button>
 <button data-section="awareness">📢 &nbsp; Awareness</button>
@@ -161,6 +162,26 @@ body.viewer-mode button[data-act="edit"], body.viewer-mode button[data-act="dele
 <div class="card" style="margin-top:13px"><div class="table-wrap"><table id="driverTable"></table></div></div>
 </section>
 
+<section class="section" id="ovr">
+<div class="module-title"><div><h2>📹 OVR MONITORING</h2><div class="muted">Pemantauan finding OVR mengikut depot, pemandu dan status tindakan.</div></div><button class="primary" id="addOVR">＋ Tambah OVR Finding</button></div>
+<div class="mini-grid">
+<div class="mini"><span class="label">JUMLAH FINDING</span><strong id="ovrTotal">0</strong></div>
+<div class="mini"><span class="label">OPEN / DALAM TINDAKAN</span><strong id="ovrOpen">0</strong></div>
+<div class="mini"><span class="label">CLOSED</span><strong id="ovrClosed">0</strong></div>
+<div class="mini"><span class="label">REPEAT FINDING</span><strong id="ovrRepeat">0</strong></div>
+</div>
+<div class="card" style="margin-top:13px">
+<div class="module-title"><div><h2>PECAHAN MENGIKUT DEPOT</h2><div class="muted">Klik depot untuk papar nama pemandu dan status finding.</div></div><button class="secondary" id="ovrAllDepot">Semua Depot</button></div>
+<div class="mini-grid" id="ovrDepotCards"></div>
+<div class="toolbar" style="margin-top:13px">
+<label><span class="muted">Bulan</span><select id="ovrMonthFilter"><option value="">Semua Bulan</option></select></label>
+<label><span class="muted">Status</span><select id="ovrStatusFilter"><option value="">Semua Status</option><option>Open</option><option>Dalam Tindakan</option><option>Closed</option></select></label>
+<span class="status" id="ovrFilterLabel">Semua Depot</span>
+</div>
+<div class="table-wrap"><table id="ovrTable"></table></div>
+</div>
+</section>
+
 <section class="section" id="wpi">
 <div class="module-title"><div><h2>WORKPLACE INSPECTION (WPI)</h2><div class="muted">Pemantauan inspection, finding dan closure.</div></div><button class="primary" id="addWPI">＋ Tambah WPI</button></div>
 <div class="mini-grid">
@@ -202,7 +223,7 @@ body.viewer-mode button[data-act="edit"], body.viewer-mode button[data-act="dele
 <script>
 const APAD_INITIAL={"headers": ["No.", "Nama", "Bil 01 2026", "Bil 02 2026", "Bil 03 2026", "Bil 04 2026", "Bil 05 2026", "Bil 06 2026", "Bil 07 2026"], "rows": [["1", "Tn Hj Zainal bin Hj Ismail (Chief Operation Officer) – Pengerusi", "/", "/", null, null, null, null, null], ["2", "Khairon Shah Johari (Chief Operation Officer) – Pengerusi", "/", "/", "/", "/", "/", "/", "/"], ["3", "Hanafi Hj Mohd Wazir (Head, Corporate Services & Business Development) – Naib Pengerusi", "/", "/", "/", "/", "/", "/", "/"], ["4", "Shukri Mohd Hashim (Head, Busines Assurance) – Setiausaha", "/", "/", "/", "/", "/", "/", "/"], ["5", "Mohamad Zairullizam Mohamad Khairy (Executive HSE, OSH-C) – Pencatat Minit", "/", "/", "/", "/", "/", "/", "/"], ["6", "Mohd Shawal Bin Aman (HSE Supervisor, OSH-C / Pasir Gudang)", "/", "/", "/", "/", "/", "/", "/"], ["7", "Mohd Azwin Sundu (HSE Supervisor, OSH-C / Port Klang)", "/", "/", "/", "/", "/", "/", "/"], ["8", "Azizi Abdul Aziz (Regional Manager, East Coast)", "/", "/", "/", "/", "/", "/", "/"], ["9", "Mohd Hasalaam Mat Nasir (HSE Supervisor / OSH-C, Kuantan)", "/", "/", "/", "/", "/", "/", "/"], ["10", "Mohamad Faisal Bin Ismail (Head, Strategic Planning & Development)", "/", "/", "/", "/", "/", "/", "/"], ["11", "Norhayati Binti Hamdan (Executive Human Resource & Training)", "/", "/", "/", "/", "/", "/", "/"], ["12", "Muhammad Zaherul Adli Bin Zulkifle (Executive, Technical / Sahabat)", "/", "/", "/", "/", "/", "/", "/"], ["13", "Mohd Rahmat bin Musa (HSE Supervisor, OSH-C / Sahabat)", "/", "/", "/", "/", "/", "/", "/"], ["14", "Mohd Taufik Bin Taullah Amri (Executive, Loss Prevention & Security)", "/", "/", "/", "/", "/", "/", "/"], ["15", "Mohd Hanafee Ismail (Lead, Cargo & Side Curtain)", "/", "/", "/", "/", "/", "/", "/"], ["16", "Amirul Bin Mohd Said (Regional Manager East, Sahabat)", "/", "/", "/", "/", "/", "/", "/"], ["17", "Syahmi Ahmad Ramly (Regional Manager, Pasir Gudang)", "/", "/", "/", "/", "/", "/", "/"], ["18", "Norhafida Mohd Hamdan (HSE, Clerk / HQ)", "/", "/", "/", "/", "/", "/", "/"], ["19", "Fatimah Azleena Mohamad (Head, Distribution Centre Services (DCS))", null, "/", "/", "/", "/", "/", "/"], ["20", "Hazif Hazizi (Lead, Last Mile)", null, "/", "/", "/", "/", "/", "/"], ["21", "Shafirah Binti Kamaluddin (Penyelia HSE, Last Mile)", null, null, null, null, "/", "/", "/"], ["22", "Anizan Bin Wan Ramli (Anizan Bin Wan Ramli)", null, "/", "/", "/", "/", "/", "/"], ["23", "Muhammad Nur Alif Bin Mohd Asri (Executive, Technical / HQ)", null, null, null, null, null, null, "/"], ["24", "Muhammad Amirul Hafiz Bin Mohd Asnawi (Executive, Technical / Pasir Gudang)", null, null, null, null, null, null, "/"], ["25", "Ruhaizan Abd Razak (Executive, Procurement / HQ)", null, "/", "/", "/", "/", "/", "/"], ["26", "Mohd Ridzwan Bin Talib (Executive, MIS / HQ)", "/", "/", null, null, null, "/", "/"], ["27", "Nurul Hidayah Binti Hashim (Head of Procurement)", null, null, null, null, null, null, "/"], ["28", "Muhammad Nur Iznei bin Hashim (Regional Manager, Port Klang)", null, null, null, null, null, null, "/"], ["29", "Mohd Tarmizi bin Mohd Fuad (Lead, Corporate Affairs & Liaison)", null, null, null, null, null, null, "/"], ["30", "Mohd Fadhir Mohd Zubil (HSE Supervisor / OSH-C, Shah Alam)", "/", "/", null, null, null, null, null], ["31", "Hanin Nazhifah Bt Syahjidan (Executive, Standard & Compliance)", "/", "/", null, null, null, null, null], ["32", "Shiva Manikam (Regional Manager, Pasir Gudang)", "/", "/", null, null, null, null, null], ["33", "Mohammad Ikmal Saufie Bin Abd Shukor (Executive, Management Information System)", null, "/", "/", "/", "/", null, null], ["34", "Noraida Mahmud (Lead, Standard & Compliance, & Contract Management)", null, "/", "/", "/", null, null, null], ["35", "Mifzal Aluddin Bin Baharudin", null, null, null, "/", "/", "/", null]]};
 const STORE_KEY="fgv_hse_dashboard_2026_v1";
-let data={apad:JSON.parse(JSON.stringify(APAD_INITIAL)),accidents:[],driverOffences:[],wpi:[],mvi:[],awareness:[],training:[],customModules:[]};
+let data={apad:JSON.parse(JSON.stringify(APAD_INITIAL)),accidents:[],driverOffences:[],ovr:[],wpi:[],mvi:[],awareness:[],training:[],customModules:[]};
 try{const saved=localStorage.getItem(STORE_KEY);if(saved){const x=JSON.parse(saved);data={...data,...x}}}catch(e){}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -229,7 +250,7 @@ $("closeDetail").onclick=()=>$("detail").classList.remove("show");
 function switchSection(id){
  document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===id));
  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.section===id));
- const labels={home:["HSE Management Dashboard 2026","Ringkasan KKP APAD, kemalangan, pemandu, WPI dan MVI."],attendance:["Kehadiran KKP APAD 2026","Analisis kehadiran mengikut Bil mesyuarat."],"attendance-edit":["Edit Kehadiran APAD","Tambah Bil, ahli dan status kehadiran."],members:["Ahli Jawatankuasa KKP APAD","Rekod kehadiran setiap ahli."],accident:["Data Kemalangan","Daftar, pantau dan semak status kes kemalangan."],driver:["Kesalahan Pemandu & Tindakan","Pantau kesalahan dan tindakan susulan."],wpi:["Workplace Inspection (WPI)","Pemantauan finding dan closure."],mvi:["Motor Vehicle Incident (MVI)","Pemantauan MVI 2026."],awareness:["Awareness HSE","Program kesedaran, hebahan dan engagement HSE."],training:["Training HSE","Rekod latihan, peserta, provider dan sijil."],manage:["Urus Dashboard / Edit Modul","Tambah dan urus modul tambahan dashboard."]};
+ const labels={home:["HSE Management Dashboard 2026","Ringkasan KKP APAD, kemalangan, pemandu, WPI dan MVI."],attendance:["Kehadiran KKP APAD 2026","Analisis kehadiran mengikut Bil mesyuarat."],"attendance-edit":["Edit Kehadiran APAD","Tambah Bil, ahli dan status kehadiran."],members:["Ahli Jawatankuasa KKP APAD","Rekod kehadiran setiap ahli."],accident:["Data Kemalangan","Daftar, pantau dan semak status kes kemalangan."],driver:["Kesalahan Pemandu & Tindakan","Pantau kesalahan dan tindakan susulan."],ovr:["OVR Monitoring","Pemantauan finding OVR mengikut depot, pemandu dan status."],wpi:["Workplace Inspection (WPI)","Pemantauan finding dan closure."],mvi:["Motor Vehicle Incident (MVI)","Pemantauan MVI 2026."],awareness:["Awareness HSE","Program kesedaran, hebahan dan engagement HSE."],training:["Training HSE","Rekod latihan, peserta, provider dan sijil."],manage:["Urus Dashboard / Edit Modul","Tambah dan urus modul tambahan dashboard."]};
  $("pageTitle").textContent=labels[id][0];$("pageSub").textContent=labels[id][1];window.scrollTo({top:0,behavior:"smooth"})
 }
 document.querySelectorAll("[data-section]").forEach(b=>b.onclick=()=>switchSection(b.dataset.section));
@@ -275,6 +296,8 @@ accident:[
 ["date","Tarikh","date"],["location","Lokasi","text"],["depot","Depot / Wilayah","text"],["vehicle","No. Kenderaan","text"],["type","Jenis Kemalangan","text"],["severity","Tahap","select",["Minor","Serious","Fatal"]],["cause","Punca / Ringkasan","textarea"],["status","Status","select",["Open","Closed"]],["action","Tindakan Susulan","textarea"]],
 driver:[
 ["date","Tarikh","date"],["driver","Nama Pemandu","text"],["depot","Depot","text"],["vehicle","No. Kenderaan","text"],["offence","Jenis Kesalahan","select",["Speed Violation","Tidak Memakai Seat Belt","Penggunaan Telefon","OVR Tampering","Blackout Hours","Fatigue / Rest Hours","Lain-lain"]],["detail","Butiran Kesalahan","textarea"],["action","Tindakan / Consequence Management","textarea"],["status","Status","select",["Open","Closed"]]],
+ovr:[
+["date","Tarikh","date"],["depot","Depot","select",["Port Klang","Kuantan","Pasir Gudang","Sahabat"]],["driver","Nama Pemandu","text"],["vehicle","No. Kenderaan","text"],["finding","Jenis Finding","select",["Camera Covered","Phone","Seat Belt","Speed >80 km/h","Smoking","Lain-lain"]],["repeat","Repeat Finding","select",["Tidak","Ya"]],["status","Status Finding","select",["Open","Dalam Tindakan","Closed"]],["action","Tindakan / Catatan","textarea"]],
 wpi:[
 ["date","Tarikh Inspection","date"],["site","Depot / Lokasi","text"],["inspector","Pemeriksa","text"],["scope","Skop Inspection","text"],["findings","Jumlah Finding","number"],["closed","Finding Closed","number"],["action","Tindakan / Catatan","textarea"],["status","Status","select",["Open","Closed"]]],
 awareness:[["date","Tarikh","date"],["title","Tajuk Awareness","text"],["category","Kategori / Medium","text"],["target","Sasaran / Depot","text"],["people","Jumlah Peserta / Penerima","number"],["status","Status","select",["Dirancang","Selesai"]],["notes","Catatan / Rujukan","textarea"]],
@@ -285,7 +308,7 @@ mvi:[
 let modalMode="", editIndex=null;
 function openModal(mode,index=null){
  modalMode=mode;editIndex=index;$("modal").style.display="flex";
- const titles={accident:"Data Kemalangan",driver:"Kesalahan Pemandu & Tindakan",wpi:"Workplace Inspection (WPI)",mvi:"Motor Vehicle Incident (MVI)",awareness:"Awareness",training:"Training"};
+ const titles={accident:"Data Kemalangan",driver:"Kesalahan Pemandu & Tindakan",ovr:"OVR Monitoring",wpi:"Workplace Inspection (WPI)",mvi:"Motor Vehicle Incident (MVI)",awareness:"Awareness",training:"Training"};
  $("modalTitle").textContent=(index===null?"Tambah ":"Edit ")+titles[mode];
  const collection=mode==="accident"?data.accidents:mode==="driver"?data.driverOffences:data[mode];
  const rec=index===null?{}:collection[index];
@@ -293,7 +316,7 @@ function openModal(mode,index=null){
 }
 $("modalClose").onclick=()=>$("modal").style.display="none";
 $("modalForm").onsubmit=e=>{e.preventDefault();const fd=new FormData(e.target),rec={};schemas[modalMode].forEach(f=>rec[f[0]]=fd.get(f[0])||"");const arr=modalMode==="accident"?data.accidents:modalMode==="driver"?data.driverOffences:data[modalMode];if(editIndex===null)arr.push(rec);else arr[editIndex]=rec;$("modal").style.display="none";persist();renderAll()};
-$("addAccident").onclick=()=>openModal("accident");$("addDriver").onclick=()=>openModal("driver");$("addWPI").onclick=()=>openModal("wpi");$("addMVI").onclick=()=>openModal("mvi");$("addAwareness").onclick=()=>openModal("awareness");$("addTraining").onclick=()=>openModal("training");
+$("addAccident").onclick=()=>openModal("accident");$("addDriver").onclick=()=>openModal("driver");$("addOVR").onclick=()=>openModal("ovr");$("addWPI").onclick=()=>openModal("wpi");$("addMVI").onclick=()=>openModal("mvi");$("addAwareness").onclick=()=>openModal("awareness");$("addTraining").onclick=()=>openModal("training");
 
 function actionButtons(mode,i){if(!isAdmin())return "";return`<button class="btnlink edit-record" data-mode="${mode}" data-i="${i}">Edit</button> &nbsp; <button class="btnlink delete-record" style="color:#ff7585" data-mode="${mode}" data-i="${i}">Padam</button>`}
 function bindRecordButtons(){document.querySelectorAll(".edit-record").forEach(b=>b.onclick=()=>openModal(b.dataset.mode,+b.dataset.i));document.querySelectorAll(".delete-record").forEach(b=>b.onclick=()=>{if(!confirm("Padam rekod ini?"))return;const arr=b.dataset.mode==="accident"?data.accidents:b.dataset.mode==="driver"?data.driverOffences:data[b.dataset.mode];arr.splice(+b.dataset.i,1);persist();renderAll()})}
@@ -306,6 +329,29 @@ function renderDriver(){
  const a=data.driverOffences;$("drvTotal").textContent=a.length;$("drvOpen").textContent=a.filter(x=>x.status==="Open").length;$("drvClosed").textContent=a.filter(x=>x.status==="Closed").length;$("drvAction").textContent=a.filter(x=>(x.action||"").trim()).length;
  $("driverTable").innerHTML=a.length?`<tr><th>Tarikh</th><th>Pemandu</th><th>Depot</th><th>Kenderaan</th><th>Kesalahan</th><th>Tindakan</th><th>Status</th><th></th></tr>${a.map((x,i)=>`<tr><td>${esc(x.date)}</td><td>${esc(x.driver)}</td><td>${esc(x.depot)}</td><td>${esc(x.vehicle)}</td><td>${esc(x.offence)}</td><td>${esc(x.action)}</td><td>${pill(x.status)}</td><td>${actionButtons("driver",i)}</td></tr>`).join("")}`:`<tr><td class="empty">Belum ada data kesalahan pemandu.</td></tr>`
 }
+let ovrDepotFilter="";
+function renderOVR(){
+ const depots=["Port Klang","Kuantan","Pasir Gudang","Sahabat"];
+ const all=data.ovr||[];
+ $("ovrTotal").textContent=all.length;
+ $("ovrOpen").textContent=all.filter(x=>x.status!=="Closed").length;
+ $("ovrClosed").textContent=all.filter(x=>x.status==="Closed").length;
+ $("ovrRepeat").textContent=all.filter(x=>(x.repeat||"").toLowerCase()==="ya").length;
+ $("ovrDepotCards").innerHTML=depots.map(d=>{const n=all.filter(x=>x.depot===d).length;return `<button class="mini ovr-depot-btn" data-depot="${esc(d)}" style="text-align:left;color:#fff;cursor:pointer"><span class="label">${esc(d.toUpperCase())}</span><strong>${n}</strong><span class="muted">finding</span></button>`}).join("");
+ document.querySelectorAll(".ovr-depot-btn").forEach(b=>b.onclick=()=>{ovrDepotFilter=b.dataset.depot;renderOVR()});
+ $("ovrAllDepot").onclick=()=>{ovrDepotFilter="";renderOVR()};
+ const months=[...new Set(all.map(x=>(x.date||"").slice(0,7)).filter(Boolean))].sort().reverse();
+ const mf=$("ovrMonthFilter"),prevMonth=mf.value;
+ mf.innerHTML='<option value="">Semua Bulan</option>'+months.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
+ if(months.includes(prevMonth)) mf.value=prevMonth;
+ const sf=$("ovrStatusFilter");
+ const month=mf.value,status=sf.value;
+ const rows=all.map((x,i)=>({x,i})).filter(({x})=>(!ovrDepotFilter||x.depot===ovrDepotFilter)&&(!month||(x.date||"").slice(0,7)===month)&&(!status||x.status===status));
+ $("ovrFilterLabel").textContent=ovrDepotFilter||"Semua Depot";
+ $("ovrTable").innerHTML=rows.length?`<tr><th>Tarikh</th><th>Depot</th><th>Nama Pemandu</th><th>No. Lori</th><th>Finding</th><th>Repeat</th><th>Status</th><th>Tindakan</th><th></th></tr>${rows.map(({x,i})=>`<tr><td>${esc(x.date)}</td><td>${esc(x.depot)}</td><td><b>${esc(x.driver)}</b></td><td>${esc(x.vehicle)}</td><td>${esc(x.finding)}</td><td>${(x.repeat||"").toLowerCase()==="ya"?'<span class="pill red">Repeat</span>':'<span class="pill green">Tidak</span>'}</td><td>${pill(x.status)}</td><td>${esc(x.action)}</td><td>${actionButtons("ovr",i)}</td></tr>`).join("")}`:`<tr><td class="empty">Belum ada data OVR untuk pilihan ini.</td></tr>`;
+ mf.onchange=()=>renderOVR(); sf.onchange=()=>renderOVR();
+}
+
 function renderWPI(){
  const a=data.wpi,totalF=a.reduce((s,x)=>s+(+x.findings||0),0),closed=a.reduce((s,x)=>s+(+x.closed||0),0),open=Math.max(0,totalF-closed);$("wpiTotal").textContent=a.length;$("wpiFinding").textContent=totalF;$("wpiOpen").textContent=open;$("wpiRate").textContent=totalF?((closed/totalF)*100).toFixed(1)+"%":"0%";
  $("wpiTable").innerHTML=a.length?`<tr><th>Tarikh</th><th>Lokasi</th><th>Pemeriksa</th><th>Skop</th><th>Finding</th><th>Closed</th><th>Closure %</th><th>Status</th><th></th></tr>${a.map((x,i)=>{const f=+x.findings||0,c=+x.closed||0;return`<tr><td>${esc(x.date)}</td><td>${esc(x.site)}</td><td>${esc(x.inspector)}</td><td>${esc(x.scope)}</td><td>${f}</td><td>${c}</td><td>${f?((c/f)*100).toFixed(1):0}%</td><td>${pill(x.status)}</td><td>${actionButtons("wpi",i)}</td></tr>`}).join("")}`:`<tr><td class="empty">Belum ada data WPI.</td></tr>`
@@ -321,14 +367,14 @@ function renderCustomModules(){const a=data.customModules||[];$("customModuleLis
 window.renameCustom=i=>{const n=prompt("Nama modul baru:",data.customModules[i].name);if(n){data.customModules[i].name=n;persist();renderCustomModules()}};window.deleteCustom=i=>{if(confirm("Padam modul tambahan ini?")){data.customModules.splice(i,1);persist();renderCustomModules()}};
 function renderHome(apad,wpi){
  $("homeAttendance").textContent=(apad.rate*100).toFixed(1)+"%";$("homeAccident").textContent=data.accidents.length;$("homeDriver").textContent=data.driverOffences.length;$("homeMVI").textContent=data.mvi.length;$("homeWPI").textContent=data.wpi.length;$("homeFinding").textContent=wpi.totalF;$("homeOpen").textContent=wpi.open;$("homeClosed").textContent=wpi.closed;
- $("homeModules").innerHTML=`<table><tr><th>Modul</th><th>Jumlah / Status</th><th></th></tr><tr><td>Kehadiran KKP APAD</td><td>${(apad.rate*100).toFixed(1)}%</td><td><button class="btnlink jump" data-go="attendance">Buka</button></td></tr><tr><td>Data Kemalangan</td><td>${data.accidents.length} kes</td><td><button class="btnlink jump" data-go="accident">Buka</button></td></tr><tr><td>Kesalahan Pemandu</td><td>${data.driverOffences.length} kes</td><td><button class="btnlink jump" data-go="driver">Buka</button></td></tr><tr><td>WPI</td><td>${data.wpi.length} inspection</td><td><button class="btnlink jump" data-go="wpi">Buka</button></td></tr><tr><td>MVI</td><td>${data.mvi.length} kes</td><td><button class="btnlink jump" data-go="mvi">Buka</button></td></tr><tr><td>Awareness</td><td>${data.awareness.length} program</td><td><button class="btnlink jump" data-go="awareness">Buka</button></td></tr><tr><td>Training</td><td>${data.training.length} latihan</td><td><button class="btnlink jump" data-go="training">Buka</button></td></tr></table>`;
+ $("homeModules").innerHTML=`<table><tr><th>Modul</th><th>Jumlah / Status</th><th></th></tr><tr><td>Kehadiran KKP APAD</td><td>${(apad.rate*100).toFixed(1)}%</td><td><button class="btnlink jump" data-go="attendance">Buka</button></td></tr><tr><td>Data Kemalangan</td><td>${data.accidents.length} kes</td><td><button class="btnlink jump" data-go="accident">Buka</button></td></tr><tr><td>Kesalahan Pemandu</td><td>${data.driverOffences.length} kes</td><td><button class="btnlink jump" data-go="driver">Buka</button></td></tr><tr><td>OVR Monitoring</td><td>${(data.ovr||[]).length} finding</td><td><button class="btnlink jump" data-go="ovr">Buka</button></td></tr><tr><td>WPI</td><td>${data.wpi.length} inspection</td><td><button class="btnlink jump" data-go="wpi">Buka</button></td></tr><tr><td>MVI</td><td>${data.mvi.length} kes</td><td><button class="btnlink jump" data-go="mvi">Buka</button></td></tr><tr><td>Awareness</td><td>${data.awareness.length} program</td><td><button class="btnlink jump" data-go="awareness">Buka</button></td></tr><tr><td>Training</td><td>${data.training.length} latihan</td><td><button class="btnlink jump" data-go="training">Buka</button></td></tr></table>`;
  document.querySelectorAll(".jump").forEach(b=>b.onclick=()=>switchSection(b.dataset.go));
  const recent=(arr,renderer)=>arr.slice(-4).reverse().map(renderer).join("")||`<div class="empty">Belum ada data.</div>`;
  $("latestAccidents").innerHTML=recent(data.accidents,x=>`<div style="padding:8px 0;border-bottom:1px solid #293d58"><b>${esc(x.date||"-")}</b> • ${esc(x.depot||"-")}<br><span class="muted">${esc(x.type||"-")} • ${esc(x.vehicle||"-")}</span></div>`);
  $("latestDriver").innerHTML=recent(data.driverOffences,x=>`<div style="padding:8px 0;border-bottom:1px solid #293d58"><b>${esc(x.driver||"-")}</b><br><span class="muted">${esc(x.offence||"-")} • ${esc(x.depot||"-")}</span></div>`);
  $("latestMVI").innerHTML=recent(data.mvi,x=>`<div style="padding:8px 0;border-bottom:1px solid #293d58"><b>${esc(x.date||"-")}</b> • ${esc(x.depot||"-")}<br><span class="muted">${esc(x.category||"-")} • ${esc(x.vehicle||"-")}</span></div>`)
 }
-function renderAll(){const apad=renderAPAD();renderAccidents();renderDriver();const wpi=renderWPI();renderMVI();renderAwareness();renderTraining();renderCustomModules();bindRecordButtons();renderHome(apad,wpi);$("topBadge").innerHTML=`2026 • ${data.apad.rows.length} Ahli <span class="mode-badge ${isAdmin()?"mode-admin":"mode-view"}">${isAdmin()?"🔐 ADMIN":"👁 VIEWER"}</span>`}
+function renderAll(){const apad=renderAPAD();renderAccidents();renderDriver();renderOVR();const wpi=renderWPI();renderMVI();renderAwareness();renderTraining();renderCustomModules();bindRecordButtons();renderHome(apad,wpi);$("topBadge").innerHTML=`2026 • ${data.apad.rows.length} Ahli <span class="mode-badge ${isAdmin()?"mode-admin":"mode-view"}">${isAdmin()?"🔐 ADMIN":"👁 VIEWER"}</span>`}
 applyModeUI();
 renderAll();
 
