@@ -38,7 +38,14 @@ textarea{min-height:80px;resize:vertical}.form-grid{display:grid;grid-template-c
 .status{color:#7ef2bf;font-size:10px;padding:9px}.empty{padding:28px;text-align:center;color:#7790ad}
 .module-title{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:13px}
 .mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.mini{padding:13px;border-radius:12px;background:#0d1a2d;border:1px solid #263f5d}.mini strong{display:block;font-size:20px;margin-top:6px}
-@media(max-width:1050px){aside{width:205px}.kpis,.mini-grid{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr 1fr}}
+.ovr-chart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:13px}
+.ovr-chart{background:#0d1a2d;border:1px solid #263f5d;border-radius:12px;padding:14px;min-height:210px}
+.ovr-chart h3{margin:0 0 12px;font-size:13px;color:#e8f3ff}
+.ovr-bar-row{display:grid;grid-template-columns:minmax(100px,1.3fr) 3fr 42px;gap:8px;align-items:center;margin:9px 0;font-size:11px}
+.ovr-bar-track{height:12px;background:#15273d;border:1px solid #2c4665;border-radius:999px;overflow:hidden}
+.ovr-bar-fill{height:100%;background:linear-gradient(90deg,#25c8ec,#7a42d6);border-radius:999px}
+.ovr-chart-empty{padding:40px 8px;text-align:center;color:#7790ad}
+@media(max-width:1050px){aside{width:205px}.ovr-chart-grid{grid-template-columns:1fr}.kpis,.mini-grid{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.app{display:block}aside{width:100%;height:auto;position:static}.kpis,.mini-grid,.form-grid{grid-template-columns:1fr}.form-grid .wide{grid-column:auto}main{padding:14px}}
 
 /* Viewer/Admin mode */
@@ -176,9 +183,22 @@ body.viewer-mode button[data-act="edit"], body.viewer-mode button[data-act="dele
 <div class="toolbar" style="margin-top:13px">
 <label><span class="muted">Bulan</span><select id="ovrMonthFilter"><option value="">Semua Bulan</option></select></label>
 <label><span class="muted">Status</span><select id="ovrStatusFilter"><option value="">Semua Status</option><option>Open</option><option>Dalam Tindakan</option><option>Closed</option></select></label>
+<label><span class="muted">Nama Pemandu</span><select id="ovrDriverFilter"><option value="">Semua Pemandu</option></select></label>
+<label><span class="muted">No. Lori</span><select id="ovrVehicleFilter"><option value="">Semua Lori</option></select></label>
+<label><span class="muted">Jenis Finding</span><select id="ovrFindingFilter"><option value="">Semua Finding</option></select></label>
+<button class="secondary" id="ovrResetFilter">Reset Filter</button>
 <span class="status" id="ovrFilterLabel">Semua Depot</span>
 </div>
+
+<div class="ovr-chart-grid">
+<div class="ovr-chart"><h3>📊 FINDING MENGIKUT JENIS</h3><div id="ovrChartFinding"></div></div>
+<div class="ovr-chart"><h3>🏢 FINDING MENGIKUT DEPOT</h3><div id="ovrChartDepot"></div></div>
+<div class="ovr-chart"><h3>✅ STATUS FINDING</h3><div id="ovrChartStatus"></div></div>
+</div>
+
+<div class="card" style="margin-top:13px;padding:0">
 <div class="table-wrap"><table id="ovrTable"></table></div>
+</div>
 </div>
 </section>
 
@@ -369,19 +389,53 @@ function renderOVR(){
  $("ovrOpen").textContent=all.filter(x=>x.status!=="Closed").length;
  $("ovrClosed").textContent=all.filter(x=>x.status==="Closed").length;
  $("ovrRepeat").textContent=all.filter(x=>(x.repeat||"").toLowerCase()==="ya").length;
+
  $("ovrDepotCards").innerHTML=depots.map(d=>{const n=all.filter(x=>x.depot===d).length;return `<button class="mini ovr-depot-btn" data-depot="${esc(d)}" style="text-align:left;color:#fff;cursor:pointer"><span class="label">${esc(d.toUpperCase())}</span><strong>${n}</strong><span class="muted">finding</span></button>`}).join("");
  document.querySelectorAll(".ovr-depot-btn").forEach(b=>b.onclick=()=>{ovrDepotFilter=b.dataset.depot;renderOVR()});
  $("ovrAllDepot").onclick=()=>{ovrDepotFilter="";renderOVR()};
+
+ const mf=$("ovrMonthFilter"),sf=$("ovrStatusFilter"),df=$("ovrDriverFilter"),vf=$("ovrVehicleFilter"),ff=$("ovrFindingFilter");
+ const prev={month:mf.value,status:sf.value,driver:df.value,vehicle:vf.value,finding:ff.value};
  const months=[...new Set(all.map(x=>(x.date||"").slice(0,7)).filter(Boolean))].sort().reverse();
- const mf=$("ovrMonthFilter"),prevMonth=mf.value;
- mf.innerHTML='<option value="">Semua Bulan</option>'+months.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
- if(months.includes(prevMonth)) mf.value=prevMonth;
- const sf=$("ovrStatusFilter");
- const month=mf.value,status=sf.value;
- const rows=all.map((x,i)=>({x,i})).filter(({x})=>(!ovrDepotFilter||x.depot===ovrDepotFilter)&&(!month||(x.date||"").slice(0,7)===month)&&(!status||x.status===status));
- $("ovrFilterLabel").textContent=ovrDepotFilter||"Semua Depot";
- $("ovrTable").innerHTML=rows.length?`<tr><th>Tarikh</th><th>Depot</th><th>Nama Pemandu</th><th>No. Lori</th><th>Finding</th><th>Repeat</th><th>Status</th><th>Tindakan</th><th></th></tr>${rows.map(({x,i})=>`<tr><td>${esc(x.date)}</td><td>${esc(x.depot)}</td><td><b>${esc(x.driver)}</b></td><td>${esc(x.vehicle)}</td><td>${esc(x.finding)}</td><td>${(x.repeat||"").toLowerCase()==="ya"?'<span class="pill red">Repeat</span>':'<span class="pill green">Tidak</span>'}</td><td>${pill(x.status)}</td><td>${esc(x.action)}</td><td>${actionButtons("ovr",i)}</td></tr>`).join("")}`:`<tr><td class="empty">Belum ada data OVR untuk pilihan ini.</td></tr>`;
- mf.onchange=()=>renderOVR(); sf.onchange=()=>renderOVR();
+ const drivers=[...new Set(all.map(x=>(x.driver||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+ const vehicles=[...new Set(all.map(x=>(x.vehicle||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+ const findings=[...new Set(all.map(x=>(x.finding||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+
+ mf.innerHTML='<option value="">Semua Bulan</option>'+months.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+ df.innerHTML='<option value="">Semua Pemandu</option>'+drivers.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+ vf.innerHTML='<option value="">Semua Lori</option>'+vehicles.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+ ff.innerHTML='<option value="">Semua Finding</option>'+findings.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");
+ if(months.includes(prev.month))mf.value=prev.month;
+ sf.value=prev.status;
+ if(drivers.includes(prev.driver))df.value=prev.driver;
+ if(vehicles.includes(prev.vehicle))vf.value=prev.vehicle;
+ if(findings.includes(prev.finding))ff.value=prev.finding;
+
+ const month=mf.value,status=sf.value,driver=df.value,vehicle=vf.value,finding=ff.value;
+ const rows=all.map((x,i)=>({x,i})).filter(({x})=>
+  (!ovrDepotFilter||x.depot===ovrDepotFilter)&&
+  (!month||(x.date||"").slice(0,7)===month)&&
+  (!status||x.status===status)&&
+  (!driver||x.driver===driver)&&
+  (!vehicle||x.vehicle===vehicle)&&
+  (!finding||x.finding===finding)
+ );
+
+ $("ovrFilterLabel").textContent=(ovrDepotFilter||"Semua Depot")+" • "+rows.length+" finding";
+ $("ovrTable").innerHTML=rows.length?`<tr><th>Tarikh</th><th>Depot</th><th>Nama Pemandu</th><th>No. Lori</th><th>Finding</th><th>Repeat</th><th>Status</th><th>Tindakan</th><th></th></tr>${rows.map(({x,i})=>`<tr><td>${esc(x.date)}</td><td>${esc(x.depot)}</td><td><b>${esc(x.driver||"-")}</b></td><td>${esc(x.vehicle||"-")}</td><td>${esc(x.finding||"-")}</td><td>${(x.repeat||"").toLowerCase()==="ya"?'<span class="pill red">Repeat</span>':'<span class="pill green">Tidak</span>'}</td><td>${pill(x.status)}</td><td>${esc(x.action||"")}</td><td>${actionButtons("ovr",i)}</td></tr>`).join("")}`:`<tr><td class="empty">Tiada rekod untuk pilihan filter ini.</td></tr>`;
+
+ function counts(key,source=rows.map(r=>r.x)){const m={};source.forEach(x=>{const k=(x[key]||"Tidak Dinyatakan").trim?.()||x[key]||"Tidak Dinyatakan";m[k]=(m[k]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+ function bars(elId,items,limit=8){
+  const el=$(elId);if(!items.length){el.innerHTML='<div class="ovr-chart-empty">Tiada data</div>';return}
+  const arr=items.slice(0,limit),max=Math.max(...arr.map(x=>x[1]),1);
+  el.innerHTML=arr.map(([label,val])=>`<div class="ovr-bar-row"><div title="${esc(label)}">${esc(label)}</div><div class="ovr-bar-track"><div class="ovr-bar-fill" style="width:${(val/max*100).toFixed(1)}%"></div></div><b>${val}</b></div>`).join("");
+ }
+ bars("ovrChartFinding",counts("finding"),8);
+ bars("ovrChartDepot",counts("depot"),4);
+ bars("ovrChartStatus",counts("status"),5);
+
+ [mf,sf,df,vf,ff].forEach(el=>el.onchange=()=>renderOVR());
+ $("ovrResetFilter").onclick=()=>{ovrDepotFilter="";mf.value="";sf.value="";df.value="";vf.value="";ff.value="";renderOVR()};
 }
 
 function renderWPI(){
