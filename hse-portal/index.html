@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ms">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111e2f"><meta name="description" content="HSE Management Portal Preview — modul laporan keselamatan dan pemantauan depot.">
+<title>HSE One | FGV Transport — Portal Demo</title>
+<link rel="stylesheet" href="./styles.css"></head>
+<body>
+<div class="shell">
+<aside class="sidebar" aria-label="Menu navigasi">
+<div class="brand"><div class="brandmark">HSE</div><div class="brandtext"><strong>HSE ONE</strong><small>FGV Transport Services</small></div></div>
+<div id="sideNav"></div>
+<div class="side-foot"><span class="online-dot"></span> Portal demo · Versi 0.1<br>Data disimpan dalam pelayar ini sahaja.</div>
+</aside>
+<main class="main">
+<div class="topbar"><div class="breadcrumb">HSE MANAGEMENT <span style="padding:0 7px">/</span><span id="crumb">DASHBOARD</span></div>
+<div class="toptools"><div class="clock" id="clock"></div><div class="avatar">HQ</div></div></div>
+<div id="screen" aria-live="polite"></div>
+</main>
+</div>
+<div id="modal" class="hidden"></div><div id="toast" class="toast hidden" role="status"></div>
+<input type="file" accept=".json,application/json" id="importFile" class="hidden">
+<script src="./app.js" defer></script>
+</body>
+</html>
