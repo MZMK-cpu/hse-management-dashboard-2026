@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ms">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#24205f"><title>Tambah Taksiran Risiko | HSE ONE</title>
+<link rel="stylesheet" href="./hirarc.css"></head>
+<body>
+<header class="topbar"><a class="top-brand" href="./index.html"><span class="brand-icon">◈</span><strong>HSE <span>ONE</span></strong></a><button class="menu-toggle" id="menuToggle" type="button" aria-label="Tunjuk atau sembunyikan menu">☰</button><div class="top-gap"></div><div class="top-meta"><span class="lang">🇲🇾 Bahasa Melayu</span><span class="user-icon">♟</span><span>HSE Portal</span></div></header>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+<div class="profile"><div class="avatar">HSE</div><strong>FGV Transport</strong><small>Sistem Pengurusan KKP</small></div>
+<div class="nav-title">Menu</div>
+<a class="nav-link" href="./index.html"><span>▥</span> Papan Utama</a>
+<div class="nav-title">Pengurusan Risiko</div>
+<a class="nav-link selected" href="./hirarc.html"><span>▦</span> Taksiran Risiko <b>⌄</b></a>
+<a class="nav-sub selected-sub" href="./hirarc.html">＋ Tambah Taksiran Risiko</a>
+<a class="nav-sub" href="./index.html?page=hirarc">Senarai HIRARC</a>
+<a class="nav-link" href="./index.html?page=wpi"><span>☑</span> Pemeriksaan Tempat Kerja</a>
+<a class="nav-link" href="./index.html?page=incident"><span>⚑</span> Kemalangan / Insiden</a>
+<div class="nav-title">Lain-lain</div>
+<a class="nav-link" href="./index.html?page=nemso"><span>♧</span> NeMSO / Safety Card</a>
+<a class="nav-link" href="./index.html?page=ovr"><span>▣</span> Pemantauan OVR</a>
+<a class="nav-link" href="./index.html?page=capa"><span>✓</span> CAPAR</a>
+<a class="nav-link" href="./index.html?page=training"><span>♧</span> Latihan</a>
+<div class="sidebar-footer"><span class="dot"></span> Prototaip HIRARC · v0.2</div>
+</aside>
+<main class="main">
+<div class="page-title"><h1 id="pageTitle">Tambah Taksiran Risiko</h1><div class="breadcrumbs"><a href="./index.html">Laman Utama</a> <span>›</span> <a href="./index.html?page=hirarc">HIRARC List</a> <span>›</span> Tambah Taksiran Risiko</div></div>
+<div class="demo-banner" role="note"><strong>DEMO:</strong> Borang ini belum disambungkan ke sistem syarikat. Rekod hanya disimpan pada pelayar ini dan tidak dihantar ke e-mel. Gunakan data ujian sahaja.</div>
+<div class="progress" aria-label="Langkah Taksiran Risiko"><div class="progress-item current" data-progress="1"><span>1</span><div><strong>Maklumat Am</strong><small>Butiran taksiran</small></div></div><div class="progress-line"></div><div class="progress-item" data-progress="2"><span>2</span><div><strong>Kenal Pasti Bahaya</strong><small>Skor & kawalan</small></div></div><div class="progress-line"></div><div class="progress-item" data-progress="3"><span>3</span><div><strong>Semak & Simpan</strong><small>Rekod HIRARC</small></div></div></div>
+<section class="panel" id="stepOne">
+<div class="panel-heading">Maklumat Am Taksiran Risiko</div>
+<div class="panel-body"><p class="required-note">Medan bertanda <span class="req">*</span> adalah wajib.</p><h2 class="subheading">RISK ASSESSMENT DETAILS</h2><div class="underbar"></div>
+<form id="generalForm" novalidate>
+<div class="form-grid">
+<div class="form-field full"><label for="company">Syarikat <em>*</em></label><select id="company" required><option value="">- Pilih Syarikat -</option><option value="FGV Transport Services Sdn Bhd">FGV Transport Services Sdn Bhd</option></select><small class="error" id="companyError"></small></div>
+<div class="form-field"><label for="department">Projek / Jabatan <em>*</em></label><select id="department" required><option value="">- Pilih Projek / Jabatan -</option><option>Operations</option><option>HSE</option><option>Fleet Management</option><option>Workshop / Maintenance</option><option>Transport Planning</option><option>Corporate Services</option><option>Courier</option><option>Others</option></select><small class="error" id="departmentError"></small></div>
+<div class="form-field"><label for="assessDate">Tarikh Taksiran Risiko dibuat <em>*</em></label><input id="assessDate" type="date" required><small class="error" id="assessDateError"></small></div>
+<div class="form-field"><label for="station">Stesen Kerja / Depot <em>*</em></label><select id="station" required><option value="">- Pilih Stesen Kerja -</option><option value="HQ">HQ</option><option value="Port Klang">Port Klang</option><option value="Kuantan">Kuantan</option><option value="Pasir Gudang">Pasir Gudang</option><option value="Sahabat">Sahabat</option><option value="Kurier / Shah Alam">Kurier / Shah Alam</option></select><small class="error" id="stationError"></small></div>
+<div class="form-field"><label for="scope">Skop Kerja <em>*</em></label><select id="scope" required><option value="">- Pilih Skop Kerja -</option><option>Operasi Pengangkutan</option><option>Pemanduan Lori / Road Safety</option><option>Pengendalian Muatan</option><option>Penyelenggaraan & Pembaikan</option><option>Kerja Bengkel</option><option>Pemeriksaan & Audit</option><option>Pengurusan Gudang</option><option>Kerja Pejabat</option><option>Lain-lain</option></select><small class="error" id="scopeError"></small></div>
+<div class="form-field full"><label for="title">Tajuk Taksiran Risiko / Unit Kerja <em>*</em></label><input id="title" type="text" maxlength="180" required placeholder="Contoh: Kerja Mengangkat atau Penyelenggaraan Sistem Brek"><small class="hint">Terangkan aktiviti atau tugas yang dinilai secara ringkas.</small><small class="error" id="titleError"></small></div>
+<div class="form-field"><label for="assessor">Nama Penilai / Assessor</label><input id="assessor" type="text" maxlength="120" placeholder="Nama petugas yang menyediakan taksiran"></div>
+<div class="form-field"><label for="reviewDate">Tarikh Semakan Semula (jika ada)</label><input id="reviewDate" type="date"></div>
+</div>
+<div class="controls"><a class="btn btn-back" href="./index.html?page=hirarc">← Kembali</a><button class="btn btn-green" type="submit">▶ Mula Taksiran Risiko</button></div>
+</form></div></section>
+<section class="panel hidden" id="stepTwo">
+<div class="panel-heading">Kenal Pasti Bahaya & Penilaian Risiko</div>
+<div class="panel-body"><p class="step-desc">Senaraikan setiap aktiviti kerja, bahaya, kesan dan langkah kawalan. Skor risiko dikira secara automatik menggunakan <strong>L × S</strong> (skala 1–5).</p>
+<div class="legend"><span class="risk-low">RENDAH: 1–4</span><span class="risk-medium">SEDERHANA: 5–12</span><span class="risk-high">TINGGI: 15–25</span><span class="hint">Skala perlu disahkan mengikut matriks HIRARC syarikat.</span></div>
+<div id="hazards" class="hazard-list"></div><div class="actions-row"><button class="btn btn-outline" id="addHazard" type="button">＋ Tambah Aktiviti / Bahaya</button></div>
+<div class="controls"><button class="btn btn-back" id="backOne" type="button">← Kembali</button><button class="btn btn-green" id="nextReview" type="button">Semak Taksiran Risiko →</button></div>
+</div></section>
+<section class="panel hidden" id="stepThree">
+<div class="panel-heading">Semakan & Pengesahan Taksiran Risiko</div>
+<div class="panel-body"><p class="step-desc">Pastikan setiap bahaya, penarafan risiko dan cadangan kawalan adalah lengkap sebelum disimpan.</p><div id="reviewDetails"></div>
+<div class="controls"><button class="btn btn-back" id="backTwo" type="button">← Kembali</button><button class="btn btn-outline" id="downloadCSV" type="button">↓ Eksport CSV</button><button class="btn btn-outline" id="printAssessment" type="button">⎙ Cetak / PDF</button><button class="btn btn-green" id="saveAssessment" type="button">✓ Simpan Taksiran</button></div>
+</div></section>
+<div class="bottom-help">HSE ONE · Templat HIRARC untuk demonstrasi. Data disimpan secara setempat pada peranti ini sahaja.</div>
+</main>
+</div><div class="toast hidden" id="toast" role="status"></div>
+<script src="./hirarc.js" defer></script>
+</body></html>
