@@ -27,7 +27,8 @@ var SAMPLES=[
  ['ptw','Pasir Gudang','Contoh permit penyelenggaraan kontraktor','Open','Tinggi','2026-10-09','2026-10-16','Hot Work']
 ].map(function(x,i){return {id:'DEMO-'+String(i+1).padStart(3,'0'),type:x[0],depot:x[1],title:x[2],status:x[3],priority:x[4],date:x[5],due:x[6],category:x[7],reporter:'Pengguna Contoh',assignee:'Penyelia Depot',description:'Ini hanyalah rekod contoh untuk demonstrasi paparan. Bukan laporan operasi sebenar.',demo:true};});
 var records=load();
-var active='dashboard', searchText='', depotFilter='', statusFilter='', chartFilter='All';
+var requestedPage=new URLSearchParams(location.search).get('page');
+var active=(requestedPage==='all'||requestedPage==='settings'||MODULES.some(function(m){return m.key===requestedPage;}))?requestedPage:'dashboard', searchText='', depotFilter='', statusFilter='', chartFilter='All';
 function load(){try {var parsed=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(parsed))return parsed;}catch(e){} return SAMPLES.slice();}
 function persist(){try {localStorage.setItem(KEY,JSON.stringify(records));return true;}catch(err){alert('Storan pelayar penuh atau tidak tersedia. Cuba eksport data dahulu.');return false;}}
 function safe(s){return String(s===null||s===undefined?'':s).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];});}
@@ -90,7 +91,8 @@ function filters(){
 }
 function recordsPage(type){
  var m=type==='all'?{name:'Semua Laporan',desc:'Carian dan penapisan merentas semua modul.'}:mod(type);
- return heading(m.name,m.desc,button('＋ Tambah Laporan','new',type==='all'?'nemso':type,'primary')+button('Semua Rekod','openPage','all',''))+
+ var addBtn=type==='hirarc'?'<a class="button primary" href="./hirarc.html">＋ Tambah Taksiran Risiko</a>':button('＋ Tambah Laporan','new',type==='all'?'nemso':type,'primary');
+ return heading(m.name,m.desc,addBtn+button('Semua Rekod','openPage','all',''))+
  htmlNote()+ '<div class="grid stats">'+stat('JUMLAH REKOD',records.filter(function(r){return type==='all'||r.type===type;}).length,'Semua status','📁')+
  stat('DALAM TINDAKAN',records.filter(function(r){return (type==='all'||r.type===type)&&r.status!=='Selesai';}).length,'Open / in progress','⏳')+
  stat('SELESAI',records.filter(function(r){return (type==='all'||r.type===type)&&r.status==='Selesai';}).length,'Tindakan ditutup','✅')+
@@ -175,7 +177,8 @@ function detail(id){
  (r.evidence?'<div style="margin-top:20px"><div class="detail-field"><small>LAMPIRAN TEMPATAN</small><img class="detail-photo" alt="Bukti laporan" src="'+safe(r.evidence)+'"></div></div>':'')+
  (r.demo?'<p class="note" style="margin-top:18px">Rekod contoh; bukan penemuan sebenar.</p>':'');
  var actions=r.status==='Open'?button('Mula Tindakan','status',r.id+'|Dalam Tindakan','primary'):r.status==='Dalam Tindakan'?button('Tandakan Selesai','status',r.id+'|Selesai','primary'):button('Buka Semula','status',r.id+'|Open','');
- modal('Butiran Laporan',safe(r.title),body,button('Tutup','close','','')+actions);
+ var hirarcLink=r.type==='hirarc'&&Array.isArray(r.hazards)&&r.hazards.length?'<a class="button" href="./hirarc.html?id='+encodeURIComponent(r.id)+'">✎ Lihat / Edit HIRARC</a>':'';
+ modal('Butiran Laporan',safe(r.title),body,button('Tutup','close','','')+hirarcLink+actions);
 }
 function setStatus(val){var i=val.lastIndexOf('|');var id=val.slice(0,i),status=val.slice(i+1);var r=records.find(function(x){return x.id===id;});if(!r)return;r.status=status;if(persist()){closeModal();render();toast('Status dikemas kini: '+status);} }
 function download(name,type,content){var blob=new Blob([content],{type:type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}
